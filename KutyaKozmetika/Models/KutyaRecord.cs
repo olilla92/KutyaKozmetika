@@ -9,26 +9,46 @@ namespace KutyaKozmetika.Models
 {
     public class KutyaRecord
     {
-        public string CustomerName { get; set; }
-        public string DogName { get; set; }
-        public int DogAge { get; set; }
-        public string ServiceName { get; set; }
-        public int ServicePriceHuf { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public int Hour { get; set; }
-        public int Minute { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string DogName { get; set; } = string.Empty;
+        public int DogAge { get; set; } = 0;
+        public string ServiceName { get; set; } = string.Empty;
+        public int ServicePriceHuf { get; set; } = 0;
+        public DateTime AppointmentDate { get; set; } = DateTime.Now;
+        public int Hour { get; set; } = 0;
+        public int Minute { get; set; } = 0;
 
-        public KutyaRecord(string sor)
+        public static KutyaRecord FromLine(string line, char[]? separator)
         {
-            string[] s = sor.Split(";");
-            CustomerName = s[0];
-            DogName = s[1];
-            DogAge = int.Parse(s[2]);
-            ServiceName = s[3];
-            ServicePriceHuf = int.Parse(s[4]);
-            AppointmentDate = Convert.ToDateTime(s[5]);
-            Hour = int.Parse(s[6]);
-            Minute = int.Parse(s[7]);
+            string[] l = line.Split(separator);
+            KutyaRecord kutyaRec = new KutyaRecord();
+
+            kutyaRec.CustomerName = l[0];
+            kutyaRec.DogName = l[1];
+            int dogAge = 0;
+            bool success = int.TryParse(l[3], out dogAge);
+            if(!success ||  dogAge < 0) 
+                throw new ArgumentOutOfRangeException(nameof(dogAge), "A kutya életkorának pozitív számnak kell lennie.");
+            kutyaRec.DogAge = dogAge;
+            kutyaRec.ServiceName = l[3];
+            int servicePriceHuf = 0;
+            bool success2 = int.TryParse(l[4], out servicePriceHuf);
+            if (!success2 || servicePriceHuf < 0)
+                throw new ArgumentOutOfRangeException(nameof(servicePriceHuf), "A szolgáltatás ára nem lehet negatív szám.");
+            kutyaRec.ServicePriceHuf = servicePriceHuf;
+            kutyaRec.AppointmentDate = Convert.ToDateTime(l[5]);
+            int Hour = 0;
+            bool success3 = int.TryParse(l[6], out  Hour);
+            if (!success || Hour < 0)
+                throw new ArgumentOutOfRangeException(nameof(Hour), "Az óra nem lehet negatív szám.");
+            kutyaRec.Hour = Hour;
+            int Minute = 0;
+            bool success4 = int.TryParse(l[7], out Minute);
+            if (!success4 || Minute < 0)
+                throw new ArgumentOutOfRangeException(nameof(Minute), "A perc nem lehet negatív szám.");
+            kutyaRec.Minute = Minute;
+
+            return kutyaRec;
         }
 
         public override string ToString()
