@@ -1,53 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using KutyaKozmetika.Models;
+﻿using KutyaKozmetika.Models;
 
 namespace KutyaKozmetika.Repos
 {
     public class KutyaRepo
     {
-        private List<KutyaRecord> _kutyak;
-        public KutyaRepo()
+        private List<KutyaRecord> _kutyak = new List<KutyaRecord>();
+        public void ReadDataFrom(string filename)
         {
-            _kutyak = new List<KutyaRecord>();
-        }
-        public KutyaRecord? Find(string CustomerName, string DogName, int DogAge, string ServiceName, int ServicePriceHuf, DateTime AppointmentDate, int Hour, int Minute) => _kutyak.FirstOrDefault(k => k.CustomerName == CustomerName && k.DogName == DogName && k.DogAge == DogAge && k.ServiceName == ServiceName && k.ServicePriceHuf == ServicePriceHuf && k.AppointmentDate == AppointmentDate && k.Hour == Hour && k.Minute == Minute);
-        public int CustomersCount => _kutyak.Select(k => k.CustomerName).Distinct().Count();
-        public int DogCount => _kutyak.Select(k => k.DogName).Distinct().Count();
-        
-        public bool Add(KutyaRecord kutya)
-        {
-            if(kutya == null)
-                throw new ArgumentNullException(nameof(kutya));
-            KutyaRecord? FoundItem = Find(kutya.CustomerName, kutya.DogName, kutya.DogAge, kutya.ServiceName, kutya.ServicePriceHuf, kutya.AppointmentDate, kutya.Hour, kutya.Minute);
-            if (FoundItem != null)
-                return false;
-            _kutyak.Add(kutya);
-            return true;
+            try
+            {
+                string[] lines = File.ReadAllLines(filename);
+                Console.WriteLine($"{lines.Length} sor van a fájlban.");
+                foreach(string line in lines.Skip(1))
+                {
+                    KutyaRecord kutya = KutyaRecord.FromLine(line, new char[] { ';' });
+                    _kutyak.Add(kutya);
+                    Console.WriteLine(kutya);
+                }
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
-        public IReadOnlyList<KutyaRecord> AllCustomers()
+        //Üzleti logika
+        public int GetNumberOfDogs()
         {
-            return _kutyak.Select(k => k).ToList();
+            return _kutyak.Select(k => k.DogName).Distinct().Count();
         }
-        public IReadOnlyList<string> Dogs()
+        public int GetNumberOfDogNames()
+        {
+            return _kutyak.Select(k => k.DogName).Distinct().Count();
+        }
+        public List<string> GetCustomerNames()
+        {
+            return _kutyak.Select(k => k.CustomerName).Distinct().ToList();
+        }
+
+        public List<string> AllCustomers()
+        {
+            return _kutyak.Select(k => k.CustomerName).Distinct().ToList();
+        }
+        public List<string> Dogs()
         {
             return _kutyak.Select(k => k.DogName).Distinct().ToList();
         }
-
-        //groupBy(k => k.ServiceName)  adatok kiszűrése, hogy mindegyikből csak egy jelenjen meg, Distict() nem működik ez esetben
         public IReadOnlyList<KutyaRecord> ServicesAndPrices()
         {
             return _kutyak.GroupBy(k => k.ServiceName).Select(k => k.First()).ToList();
         }
-
         public IReadOnlyList<KutyaRecord> CertainDay(int day)
         {
             return _kutyak.Where(k => k.AppointmentDate.Day == day).Select(k => k).ToList();
         }
+
     }
 }
