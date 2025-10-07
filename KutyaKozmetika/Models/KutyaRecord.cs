@@ -21,39 +21,39 @@ namespace KutyaKozmetika.Models
         public static KutyaRecord FromLine(string line, char[]? separator)
         {
             string[] l = line.Split(separator);
-            KutyaRecord kutyaRec = new KutyaRecord();
+            KutyaRecord kutyaRecord = new KutyaRecord();
 
-            kutyaRec.CustomerName = l[0];
-            kutyaRec.DogName = l[1];
+            kutyaRecord.CustomerName = l[0];
+            kutyaRecord.DogName = l[1];
             int dogAge = 0;
-            bool success = int.TryParse(l[3], out dogAge);
+            bool success = int.TryParse(l[2], out dogAge);
             if(!success ||  dogAge < 0) 
                 throw new ArgumentOutOfRangeException(nameof(dogAge), "A kutya életkorának pozitív számnak kell lennie.");
-            kutyaRec.DogAge = dogAge;
-            kutyaRec.ServiceName = l[3];
+            kutyaRecord.DogAge = dogAge;
+            kutyaRecord.ServiceName = l[3];
             int servicePriceHuf = 0;
             bool success2 = int.TryParse(l[4], out servicePriceHuf);
             if (!success2 || servicePriceHuf < 0)
                 throw new ArgumentOutOfRangeException(nameof(servicePriceHuf), "A szolgáltatás ára nem lehet negatív szám.");
-            kutyaRec.ServicePriceHuf = servicePriceHuf;
-            kutyaRec.AppointmentDate = Convert.ToDateTime(l[5]);
+            kutyaRecord.ServicePriceHuf = servicePriceHuf;
+            kutyaRecord.AppointmentDate = Convert.ToDateTime(l[5]);
             int Hour = 0;
             bool success3 = int.TryParse(l[6], out  Hour);
-            if (!success || Hour < 0)
+            if (!success3 || Hour < 0)
                 throw new ArgumentOutOfRangeException(nameof(Hour), "Az óra nem lehet negatív szám.");
-            kutyaRec.Hour = Hour;
+            kutyaRecord.Hour = Hour;
             int Minute = 0;
             bool success4 = int.TryParse(l[7], out Minute);
             if (!success4 || Minute < 0)
                 throw new ArgumentOutOfRangeException(nameof(Minute), "A perc nem lehet negatív szám.");
-            kutyaRec.Minute = Minute;
+            kutyaRecord.Minute = Minute;
 
-            return kutyaRec;
+            return kutyaRecord;
         }
 
         public override string ToString()
         {
-            return $"{CustomerName} - {DogName} - {DogAge} - {ServiceName} - {ServicePriceHuf} - {AppointmentDate.Year}-{AppointmentDate.Month}-{AppointmentDate.Day} - {Hour} - {Minute}";
+            return $"\t{CustomerName} - {DogName} - {DogAge} - {ServiceName} - {ServicePriceHuf} Ft - {AppointmentDate.Year}-{AppointmentDate.Month}-{AppointmentDate.Day} - {Hour} - {Minute}";
         }
     }
 }

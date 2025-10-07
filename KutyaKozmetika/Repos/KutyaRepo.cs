@@ -37,10 +37,6 @@ namespace KutyaKozmetika.Repos
             return _kutyak.Select(k => k.CustomerName).Distinct().ToList();
         }
 
-        public List<string> AllCustomers()
-        {
-            return _kutyak.Select(k => k.CustomerName).Distinct().ToList();
-        }
         public List<string> Dogs()
         {
             return _kutyak.Select(k => k.DogName).Distinct().ToList();
@@ -51,7 +47,7 @@ namespace KutyaKozmetika.Repos
         }
         public IReadOnlyList<KutyaRecord> CertainDay(int day)
         {
-            return _kutyak.Where(k => k.AppointmentDate.Day == day).Select(k => k).ToList();
+            return _kutyak.Where(k => k.AppointmentDate.Day == day).GroupBy(k => k.CustomerName).Select(k => k.First()).ToList();
         }
 
     }
